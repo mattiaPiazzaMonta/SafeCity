@@ -1,0 +1,38 @@
+.dashboard {
+    display: flex;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #113550;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .sidebar h2 {
+    margin-top: 0;
+  }
+  
+  .logout-button {
+    padding: 10px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .logout-button:hover {
+    background: #c0392b;
+  }
+  
+  .map-container {
+    flex: 1;
+  }
+  
