@@ -1,46 +1,131 @@
-// src/pages/Dashboard.jsx
+// frontend/safecity-frontend/pages/Dashboard.jsx
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
-import 'leaflet/dist/leaflet.css';
+import Map from '../Map';
+import ReportForm from '../components/ReportForm';
+import CommentsForm from '../components/CommentsForm';
+import FilterForm from '../components/FilterForm'; // Importa il FilterForm
+import { FaFilter } from 'react-icons/fa';
+import WeatherForm from '../components/WeatherForm';
 import './Dashboard.css';
-
-import L from 'leaflet';
-
-// Icona personalizzata (fix warning)
-const userIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/447/447031.png',
-  iconSize: [40, 40],
-  iconAnchor: [20, 40],
-  popupAnchor: [0, -40]
-});
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
-  const [position, setPosition] = useState(null);
+  const [userPosition, setUserPosition] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [emergencies, setEmergencies] = useState([]);
+  const [showWeatherForm, setShowWeatherForm] = useState(false);
 
+  
+  //stato FilterForm
+  const [showFilterForm, setShowFilterForm] = useState(false); // Gestisce la visibilità del FilterForm
+
+  // Stato per i commenti
+  const [showCommentsForm, setShowCommentsForm] = useState(false);
+  const [selectedEmergencyForComments, setSelectedEmergencyForComments] = useState(null);
+
+  // Funzione di logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/');
   };
 
+  // Ottieni posizione utente
   useEffect(() => {
     if (!localStorage.getItem('token')) navigate('/');
-    
-    // Ottenere posizione utente
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setPosition([latitude, longitude]);
+        setUserPosition([pos.coords.latitude, pos.coords.longitude]);
       },
       (err) => {
-        console.warn('Permesso negato o errore geolocalizzazione:', err);
-        // Posizione fallback opzionale
-        setPosition([45.4642, 9.19]); // Milano
+        setUserPosition([45.4642, 9.19]); // fallback Milano
       }
     );
   }, [navigate]);
+
+  // Carica emergenze dal backend
+  useEffect(() => {
+    fetch('/api/emergencies')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setEmergencies(data);
+        else if (data && Array.isArray(data.emergencies)) setEmergencies(data.emergencies);
+        else setEmergencies([]);
+      })
+      .catch(err => {
+        setEmergencies([]);
+        console.error('Errore caricamento emergenze:', err);
+      });
+  }, [showForm]);
+
+  // Quando clicchi sulla mappa
+  function handleSelectPosition(latlng) {
+    setSelectedPosition([latlng.lat, latlng.lng]);
+    setShowForm(true);
+  }
+
+  // Quando premi "Segnala dove sono"
+  function handleReportHere() {
+    if (userPosition) {
+      setSelectedPosition(userPosition);
+      setShowForm(true);
+    }
+  }
+
+  // Chiudi form
+  function handleCloseForm() {
+    setShowForm(false);
+    setSelectedPosition(null);
+  }
+
+  // Funzione per aprire il FilterForm
+  function handleFilterClick() {
+    setShowFilterForm(true); // Mostra il FilterForm
+  }
+
+  // Funzione per chiudere il FilterForm
+  function handleCloseFilterForm() {
+    setShowFilterForm(false); // Nasconde il FilterForm
+  }
+
+  //mostrare il modal dei commenti
+  function handleShowComments(emergency) {
+    setSelectedEmergencyForComments(emergency);
+    setShowCommentsForm(true);
+  }
+  
+  function handleCloseCommentsForm() {
+    setShowCommentsForm(false);
+    setSelectedEmergencyForComments(null);
+  }
+
+  function handleOpenWeatherForm() {
+  setShowWeatherForm(true);
+}
+function handleCloseWeatherForm() {
+  setShowWeatherForm(false);
+}
+
+async function handleDeleteEmergency(emergencyId) {
+  if (!window.confirm("Sei sicuro di voler eliminare questa segnalazione?")) return;
+  try {
+    const res = await fetch(`/api/emergencies/${emergencyId}`, {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      setEmergencies(emergencies.filter(e => e.id !== emergencyId));
+    } else {
+      const data = await res.json();
+      alert(data.error || "Errore durante la cancellazione.");
+    }
+  } catch (err) {
+    alert("Errore di rete.");
+  }
+}
+
+
 
   return (
     <div className="dashboard">
@@ -48,24 +133,73 @@ function Dashboard({ user }) {
         <div>
           <h2>SafeCity</h2>
           <p>Benvenuto <strong>{user?.nome || 'utente'}</strong></p>
+          <p className="position-warning">📡 Posizione stimata (accesso Pc)</p>
         </div>
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
+        <div>
+          <button onClick={handleReportHere} className="report-here-button">
+            Segnala dove sono
+          </button>
+        </div>
+        <div>
+          <button onClick={handleOpenWeatherForm} className="weather-button">
+            Verifica meteo zona
+          </button>
+        </div>
+        <div className="logout">
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="map-container">
-        {position && (
-          <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-              attribution='© OpenStreetMap'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        <Map
+          onSelectPosition={handleSelectPosition}
+          currentPosition={userPosition}
+          selectedPosition={selectedPosition}
+          emergencies={emergencies}
+          onShowComments={handleShowComments}
+          user={user} 
+          onDeleteEmergency={handleDeleteEmergency} 
+        />
+        {showForm && selectedPosition && (
+          <div className="modal-overlay">
+            <ReportForm
+              position={selectedPosition}
+              onClose={handleCloseForm}
             />
-            <Marker position={position} icon={userIcon}>
-              <Popup>Sei qui!</Popup>
-            </Marker>
-          </MapContainer>
+          </div>
         )}
+        {showCommentsForm && selectedEmergencyForComments && (
+          <div className="modal-overlay">
+            <CommentsForm
+              emergency={selectedEmergencyForComments}
+              onClose={handleCloseCommentsForm}
+              user={user}
+            />
+          </div>
+        )}
+        
+        {/* Bottone per aprire il FilterForm */}
+        <div>
+          <button className="filter button" onClick={handleFilterClick}>
+            <FaFilter size={24} color='#fff' />
+          </button>
+        </div>
+
+        {/* Modal per il FilterForm */}
+        {showFilterForm && (
+          <div className="modal-overlay">
+            <FilterForm onClose={handleCloseFilterForm} />
+          </div>
+        )}
+
+        {/* Modal per il WeatherForm */}
+      {showWeatherForm && (
+        <div className="modal-overlay">
+          <WeatherForm onClose={handleCloseWeatherForm} />
+        </div>
+      )}
       </div>
     </div>
   );

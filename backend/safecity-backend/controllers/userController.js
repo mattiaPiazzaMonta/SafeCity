@@ -9,7 +9,7 @@ exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-  const { nome, cognome, username, email, password } = req.body;
+  const { nome, cognome, username, email, password, ruolo } = req.body; // AGGIUNTO ruolo
 
   try {
     const existing = await User.findOne({ where: { email } });
@@ -20,7 +20,7 @@ exports.register = async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({ nome, cognome, username, email, password_hash });
+    const newUser = await User.create({ nome, cognome, username, email, password_hash, ruolo }); // AGGIUNTO ruolo
     return res.status(201).json({ message: 'Registrazione completata', user: newUser });
   } catch (err) {
     return res.status(500).json({ error: 'Errore server', details: err.message });
@@ -49,7 +49,16 @@ exports.login = async (req, res) => {
     return res.json({
       message: 'Login effettuato',
       token,
-      username: user.nome
+      user: {  
+        id: user.id,
+        nome: user.nome,
+        cognome: user.cognome,
+        username: user.username,
+        email: user.email,
+        ruolo: user.ruolo,  
+        punteggio: user.punteggio,
+        data_registrazione: user.data_registrazione
+      }
     });
   } catch (err) {
     return res.status(500).json({ error: 'Errore server', details: err.message });

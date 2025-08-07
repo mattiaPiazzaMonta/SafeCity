@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
     data_registrazione: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
+    },
+    ruolo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'user'
     }
   }, {
     tableName: 'users',

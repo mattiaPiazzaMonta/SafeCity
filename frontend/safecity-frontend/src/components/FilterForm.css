@@ -1,0 +1,136 @@
+/* Stile per il form di filtro */
+.filter-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.filter-form {
+  background-color: #fff;
+  padding: 30px 50px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 90%; 
+  max-width: 700px; 
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.filter-form h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.filter-form label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #555;
+  text-align: left;
+  font-weight: 600;
+}
+
+.filter-form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.filter-form select:focus {
+  border: 1px solid #3498db;
+}
+
+.filter-form .map-container {
+  margin-top: 20px;
+  height: 350px; /* altezza della mappa */
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%; 
+}
+
+.filter-form .buttons {
+  display: flex;
+  justify-content: space-between; /* Separazione tra i bottoni */
+  gap: 10px; /* Distanza tra i bottoni */
+  margin-top: 20px;
+  width: 100%; 
+}
+
+.apply, .x {
+  width: 48%; 
+  padding: 8px 15px; 
+  font-size: 14px; 
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.apply {
+  background-color: #28a745; 
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.apply:hover {
+  background-color: #218838; /* Verde scuro al passaggio del mouse */
+}
+
+.x {
+  background-color: #e74c3c; 
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.x:hover {
+  background-color: #c0392b; /* Rosso scuro al passaggio del mouse */
+}
+
+@media (max-width: 768px) {
+  .filter-form {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .filter-form h3 {
+    font-size: 20px;
+  }
+
+  .filter-form label {
+    font-size: 14px;
+  }
+
+  .filter-form select {
+    font-size: 14px;
+  }
+
+  .filter-form .buttons {
+    flex-direction: column; /* bottoni uno sopra l'altro su schermi piccoli */
+    gap: 10px;
+  }
+
+  .apply, .x {
+    width: 100%; /* larghi quanto il form su schermi piccoli */
+  }
+}
+
+.filter-form p {
+  color: red;
+  font-size: 16px;
+  margin-top: 20px;
+  text-align: center;
+}

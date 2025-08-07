@@ -11,10 +11,13 @@ router.post(
   [
     body('nome').notEmpty(),
     body('email').isEmail(),
-    body('password').isLength({ min: 6 })
+    body('password').isLength({ min: 6 }),
+    // validazione ruolo
+    body('ruolo').optional().isIn(['user', 'moderator'])
   ],
   userController.register
 );
+
 
 // POST /login
 router.post(

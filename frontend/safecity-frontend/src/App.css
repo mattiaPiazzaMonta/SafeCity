@@ -100,6 +100,38 @@ form button:hover {
   text-decoration: underline;
 }
 
+/* Contenitore dei radio */
+.radio-group {
+  display: flex;
+  gap: 30px; /* spazio orizzontale tra user e moderator */
+  margin: 16px 0 24px 0;
+  justify-content: center;
+}
+
+/* Stile etichetta */
+.radio-group label {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 5px;
+  transition: background 0.2s;
+}
+
+.radio-group input[type="radio"] {
+  accent-color: #1555a1; /* Colore blu moderno */
+  margin-right: 8px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Highlight al passaggio */
+.radio-group label:hover {
+  background: #eef6fc;
+}
+
+
 
 
 

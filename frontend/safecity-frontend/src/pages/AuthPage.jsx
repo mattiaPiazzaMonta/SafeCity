@@ -10,7 +10,7 @@ function AuthPage() {
   const [user, setUser] = useState(null);
 
   const handleSuccess = (userData) => {
-    console.log('TOKEN SALVATO:', localStorage.getItem('token')); //debug visivo
+    console.log('TOKEN SALVATO:', localStorage.getItem('token')); //debug
     setUser(userData);
   };
   

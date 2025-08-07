@@ -1,0 +1,33 @@
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #185689;
+  font-size: 1.06em;
+  background: #f7fbff;
+  color: #14304a;
+  margin-bottom: 16px;
+  transition: border 0.2s;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(30,50,100,0.07);
+  appearance: none; /* Nasconde la freccia di default (solo su Chrome/Edge) */
+}
+
+select:focus {
+  border: 2px solid #2474b7;
+  background: #e8f2ff;
+}
+
+select option {
+  background: #f5f9fd;
+  color: #1555a1;
+  font-size: 1em;
+}
+
+label {
+  font-weight: 500;
+  color: #1555a1;
+  display: block;
+  margin-bottom: 5px;
+}
+

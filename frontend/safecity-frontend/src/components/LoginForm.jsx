@@ -1,8 +1,6 @@
-// src/components/LoginForm.jsx
 import { useState } from 'react';
 import API from '../services/api';
 import { useNavigate } from 'react-router-dom';
-
 
 function LoginForm({ onLoginSuccess, switchToRegister }) {
   const [email, setEmail] = useState('');
@@ -10,24 +8,28 @@ function LoginForm({ onLoginSuccess, switchToRegister }) {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await API.post('/users/login', { email, password });
-      const { token, username } = response.data;
+  e.preventDefault();
+  try {
+    const response = await API.post('/users/login', { email, password });
 
-      //SALVA IL TOKEN
-      localStorage.setItem('token', token);
+   
+    const { token, user } = response.data;
 
-      localStorage.setItem('user', JSON.stringify({ nome: username }));
-      navigate('/dashboard');
+    // Salva il token
+    localStorage.setItem('token', token);
 
-      //Comunica al genitore (AuthPage) che il login è avvenuto
-      onLoginSuccess({ nome: username });
-    } catch (error) {
-      console.error('Errore login:', error.response?.data);
-      alert('Login fallito: ' + (error.response?.data?.error || 'Errore di rete'));
-    }
-  };
+    // Salva tutto l'oggetto user
+    localStorage.setItem('user', JSON.stringify(user));
+    navigate('/dashboard');
+
+    // Comunica che il login è avvenuto
+    onLoginSuccess(user);
+  } catch (error) {
+    console.error('Errore login:', error.response?.data);
+    alert('Login fallito: ' + (error.response?.data?.error || 'Errore di rete'));
+  }
+};
+
 
   return (
     <form onSubmit={handleLogin}>
@@ -55,4 +57,3 @@ function LoginForm({ onLoginSuccess, switchToRegister }) {
 }
 
 export default LoginForm;
-
